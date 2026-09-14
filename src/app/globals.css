@@ -3,25 +3,74 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #f7f7f4;
+  --ink: #1d2433;
+  --accent: #0f766e;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  font-feature-settings: "ss01", "cv11";
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+.font-hand {
+  font-family: var(--font-hand), "Segoe Print", "Bradley Hand", cursive;
+}
+
+.paper-grid {
+  background-image: radial-gradient(rgba(29, 36, 51, 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.card {
+  @apply rounded-2xl border border-ink/10 bg-white shadow-[0_1px_2px_rgba(29,36,51,0.04),0_8px_24px_-16px_rgba(29,36,51,0.25)];
+}
+
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition;
+}
+.btn-primary {
+  @apply btn bg-ink text-white hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed;
+}
+.btn-ghost {
+  @apply btn border border-ink/15 bg-white text-ink hover:border-ink/40;
+}
+.btn-icon {
+  @apply inline-flex h-8 w-8 items-center justify-center rounded-full text-ink/60 transition hover:bg-ink/5 hover:text-ink disabled:opacity-30;
+}
+
+.field {
+  @apply w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.fade-up {
+  animation: fade-up 0.5s ease both;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+  .print-page {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }

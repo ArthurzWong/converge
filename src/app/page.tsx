@@ -1,101 +1,76 @@
-import Image from "next/image";
+import Link from "next/link";
+import SiteHeader from "@/components/SiteHeader";
+import DemoPlayer from "@/components/DemoPlayer";
+import { DEMO_STORY } from "@/lib/story/demo";
 
-export default function Home() {
+const STEPS = [
+  ["Input", "Paste a problem, idea, meeting notes or a document."],
+  ["Understand", "CONVERGE finds the concepts, relationships and assumptions."],
+  ["Structure", "The mess becomes a logical chain: problem → cause → opportunity."],
+  ["Story", "The structure is told as a short visual narrative."],
+  ["Visualize", "Each scene is drawn by hand as the narration unfolds."],
+  ["Action", "You leave with 3–5 concrete, prioritised next steps."],
+];
+
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <SiteHeader />
+      <main className="mx-auto max-w-6xl px-5">
+        <section className="grid items-center gap-12 py-16 md:grid-cols-2 md:py-24">
+          <div className="fade-up">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Visual thinking, assisted</p>
+            <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+              Turn complexity
+              <br />
+              into clarity.
+            </h1>
+            <p className="mt-6 max-w-md text-lg text-ink/70">
+              Give CONVERGE a messy idea, problem or document. It thinks it through, draws it as a short visual story, and hands
+              you an action plan.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link href="/new" className="btn-primary !px-6 !py-3 !text-base">
+                Create your first visual story
+              </Link>
+              <Link href={`/story/${DEMO_STORY.id}`} className="btn-ghost !px-6 !py-3 !text-base">
+                Explore the demo
+              </Link>
+            </div>
+            <p className="mt-4 text-sm text-ink/50">No sign-up. Works in your browser.</p>
+          </div>
+          <div className="fade-up" style={{ animationDelay: "120ms" }}>
+            <DemoPlayer story={DEMO_STORY} />
+          </div>
+        </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+        <section className="border-t border-ink/10 py-16">
+          <h2 className="text-center text-sm font-semibold uppercase tracking-[0.2em] text-ink/50">How it thinks</h2>
+          <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+            {STEPS.map(([title, body], i) => (
+              <li key={title} className="card relative p-5">
+                <span className="font-hand text-2xl text-accent">{i + 1}</span>
+                <h3 className="mt-1 font-semibold">{title}</h3>
+                <p className="mt-1 text-sm text-ink/65">{body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="border-t border-ink/10 py-16 text-center">
+          <blockquote className="mx-auto max-w-2xl font-hand text-3xl leading-snug text-ink/80">
+            “Don’t just answer the question. Help people see the problem.”
+          </blockquote>
+          <div className="mt-8">
+            <Link href="/new" className="btn-primary !px-6 !py-3 !text-base">
+              Start converging
+            </Link>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      <footer className="border-t border-ink/10 py-8 text-center text-xs text-ink/45">
+        CONVERGE V1 · Ambiguity → Visual story → Action
       </footer>
-    </div>
+    </>
   );
 }
