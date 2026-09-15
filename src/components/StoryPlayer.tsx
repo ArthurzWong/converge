@@ -67,6 +67,16 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
 
   const { progress, seek } = useScenePlayback(scene?.durationSec ?? 8, playing, onEnd, scene?.id);
 
+  // confetti outlives `playing` so the final scene's burst can finish its animation
+  const [burst, setBurst] = useState(false);
+  const atEnd = progress >= 0.97;
+  useEffect(() => {
+    if (!playing || !atEnd) return;
+    setBurst(true);
+    window.setTimeout(() => setBurst(false), 1000);
+  }, [playing, atEnd]);
+  useEffect(() => setBurst(false), [scene?.id]);
+
   useEffect(() => {
     if (playing && voice && scene) speak(scene.narration);
     if (!playing) stopSpeaking();
@@ -80,7 +90,7 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
     <div className={compact ? "overflow-hidden rounded-xl border border-ink/10 bg-white" : "card overflow-hidden"}>
       <div className="relative">
         <SceneCanvas scene={scene} progress={progress} className="block h-auto w-full" />
-        {playing && progress >= 0.97 && (
+        {burst && (
           <div className="confetti pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
             {CONFETTI.map((c, i) => (
               <span key={i} style={c} />
