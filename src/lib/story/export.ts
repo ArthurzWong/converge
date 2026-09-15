@@ -2,23 +2,75 @@
 
 import { CANVAS_H, CANVAS_W } from "../animation/elements";
 
-function inlineFonts(svg: SVGSVGElement): string {
+const EXPORT_FAMILY = "ConvergeHand";
+let fontCssPromise: Promise<string> | null = null;
+
+async function toDataUrl(url: string): Promise<string> {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise<string>((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+/** Collect the self-hosted handwritten @font-face rules (from next/font) as inline data URLs. */
+function handFontCss(): Promise<string> {
+  if (fontCssPromise) return fontCssPromise;
+  fontCssPromise = (async () => {
+    const family = getComputedStyle(document.documentElement).getPropertyValue("--font-hand").trim().replace(/^['"]|['"]$/g, "");
+    const rules: CSSFontFaceRule[] = [];
+    for (const sheet of Array.from(document.styleSheets)) {
+      let list: CSSRuleList;
+      try {
+        list = sheet.cssRules;
+      } catch {
+        continue;
+      }
+      for (const rule of Array.from(list)) {
+        if (rule instanceof CSSFontFaceRule && family && rule.style.getPropertyValue("font-family").replace(/['"]/g, "") === family) {
+          rules.push(rule);
+        }
+      }
+    }
+    const parts = await Promise.all(
+      rules.map(async (rule) => {
+        const src = rule.style.getPropertyValue("src");
+        const m = /url\((['"]?)([^'")]+)\1\)/.exec(src);
+        if (!m) return "";
+        const data = await toDataUrl(m[2]);
+        const weight = rule.style.getPropertyValue("font-weight") || "400";
+        return `@font-face{font-family:'${EXPORT_FAMILY}';font-weight:${weight};src:url(${data});}`;
+      }),
+    );
+    return parts.join("");
+  })().catch(() => "");
+  return fontCssPromise;
+}
+
+async function inlineFonts(svg: SVGSVGElement): Promise<string> {
   const clone = svg.cloneNode(true) as SVGSVGElement;
   clone.setAttribute("width", String(CANVAS_W));
   clone.setAttribute("height", String(CANVAS_H));
-  // Replace class-based font with an explicit family so the rasteriser can resolve it.
+  const css = await handFontCss();
+  if (css) {
+    const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+    style.textContent = css;
+    clone.insertBefore(style, clone.firstChild);
+  }
   clone.querySelectorAll("text").forEach((t) => {
     t.removeAttribute("class");
-    t.setAttribute("font-family", "Kalam, 'Segoe Print', 'Bradley Hand', cursive");
+    t.setAttribute("font-family", `'${EXPORT_FAMILY}', Kalam, 'Segoe Print', 'Bradley Hand', cursive`);
   });
   return new XMLSerializer().serializeToString(clone);
 }
 
 export async function svgToPngBlob(svg: SVGSVGElement, scale = 2): Promise<Blob> {
-  const xml = inlineFonts(svg);
+  const xml = await inlineFonts(svg);
   const url = URL.createObjectURL(new Blob([xml], { type: "image/svg+xml;charset=utf-8" }));
   try {
-    if ("fonts" in document) await document.fonts.load("18px Kalam").catch(() => undefined);
     const img = new Image();
     await new Promise<void>((resolve, reject) => {
       img.onload = () => resolve();
