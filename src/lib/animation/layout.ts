@@ -251,8 +251,15 @@ function drawNode(p: Placed, r: () => number, out: VisualElement[]) {
 function edgePoint(p: Placed, toward: Point): Point {
   const dx = toward.x - p.cx;
   const dy = toward.y - p.cy;
+  const style = p.node.style ?? "box";
+  const labelBelow = style === "person" || style === "warning" || style === "spark";
+  // connectors leaving downward must clear the label drawn under these shapes
+  const below =
+    labelBelow && dy > 0
+      ? 22 + wrap(p.node.label, 18).length * 17 * 1.15 + (p.node.note ? 18 : 0)
+      : 0;
   const sx = dx === 0 ? Infinity : (p.w / 2 + 6) / Math.abs(dx);
-  const sy = dy === 0 ? Infinity : (p.h / 2 + 6) / Math.abs(dy);
+  const sy = dy === 0 ? Infinity : (p.h / 2 + 6 + below) / Math.abs(dy);
   const s = Math.min(sx, sy);
   return { x: p.cx + dx * s, y: p.cy + dy * s };
 }

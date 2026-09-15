@@ -73,7 +73,7 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
   useEffect(() => {
     if (!playing || !atEnd) return;
     setBurst(true);
-    window.setTimeout(() => setBurst(false), 1000);
+    window.setTimeout(() => setBurst(false), 1400);
   }, [playing, atEnd]);
   useEffect(() => setBurst(false), [scene?.id]);
 
@@ -105,11 +105,11 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
         {!playing && (
           <button
             onClick={() => setPlaying(true)}
-            className="group absolute inset-0 flex items-center justify-center bg-white/0 transition hover:bg-white/30"
+            className="group absolute inset-0 flex items-end justify-end p-4 transition hover:bg-white/20"
             aria-label="Play"
           >
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink text-white shadow-lg transition group-hover:scale-105">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/90 text-white shadow-lg transition group-hover:scale-110">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z" />
               </svg>
             </span>
