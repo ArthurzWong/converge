@@ -14,6 +14,23 @@ import PrintLayout from "./PrintLayout";
 
 type Tab = "story" | "logic" | "action";
 
+const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
+  { id: "story", label: "Story", icon: <path d="M4 6h16M4 12h10M4 18h7" strokeLinecap="round" /> },
+  {
+    id: "logic",
+    label: "Logic",
+    icon: (
+      <>
+        <circle cx="6" cy="6" r="2.5" />
+        <circle cx="18" cy="12" r="2.5" />
+        <circle cx="6" cy="18" r="2.5" />
+        <path d="M8.5 6.8 15.6 11M8.5 17.2 15.6 13" />
+      </>
+    ),
+  },
+  { id: "action", label: "Action", icon: <path d="M5 12.5 9.5 17 19 7" strokeLinecap="round" strokeLinejoin="round" /> },
+];
+
 interface Props {
   story: Story;
   onChange?: (story: Story) => void;
@@ -50,26 +67,26 @@ export default function StoryWorkspace({ story, onChange, readOnly = false, onDu
 
       <main className="mx-auto max-w-6xl px-5 pb-24 pt-8">
         <div className="no-print flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-xs text-ink/50">
-              <span className="rounded-full bg-accent-soft px-2 py-0.5 font-medium text-accent">{MODE_LABELS[story.mode].label}</span>
-              <span>{story.scenes.length} scenes</span>
-              <span>·</span>
-              <span title="Reasoning engine">{story.provider}</span>
-              {readOnly && <span className="rounded-full bg-ink/5 px-2 py-0.5">Shared · read only</span>}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-ink/50">
+              <span className="rounded-full bg-accent-soft px-2.5 py-0.5 font-medium text-accent">{MODE_LABELS[story.mode].label}</span>
+              <span className="rounded-full border border-ink/10 bg-white px-2.5 py-0.5">{story.scenes.length} scenes</span>
+              <span className="rounded-full border border-ink/10 bg-white px-2.5 py-0.5" title="Reasoning engine">
+                {story.provider}
+              </span>
+              {readOnly && <span className="rounded-full bg-ink/5 px-2.5 py-0.5">Shared · read only</span>}
             </div>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">{story.analysis.title}</h1>
-            <p className="mt-1 max-w-2xl text-ink/65">{story.analysis.problem}</p>
+            <h1 className="font-display mt-3 text-3xl font-semibold md:text-[2.6rem] md:leading-[1.1]">{story.analysis.title}</h1>
+            <p className="mt-2 max-w-2xl text-ink/65">{story.analysis.problem}</p>
           </div>
 
-          <div className="flex rounded-full border border-ink/15 bg-white p-1 text-sm">
-            {(["story", "logic", "action"] as Tab[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={`rounded-full px-4 py-1.5 capitalize transition ${tab === t ? "bg-ink text-white" : "text-ink/60 hover:text-ink"}`}
-              >
-                {t}
+          <div className="segmented" role="tablist" aria-label="Views">
+            {TABS.map((t) => (
+              <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden>
+                  {t.icon}
+                </svg>
+                {t.label}
               </button>
             ))}
           </div>

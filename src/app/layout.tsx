@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Kalam } from "next/font/google";
+import { Manrope, Fraunces, Caveat } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const kalam = Kalam({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-hand", display: "swap" });
+const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-display", display: "swap", axes: ["opsz", "SOFT"] });
+const caveat = Caveat({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-hand", display: "swap" });
 
 export const metadata: Metadata = {
   title: "CONVERGE — Turn complexity into clarity",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${kalam.variable}`}>
+    <html lang="en" className={`${manrope.variable} ${fraunces.variable} ${caveat.variable}`}>
       <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
   );

@@ -14,10 +14,22 @@ interface Props {
   onIndexChange?: (i: number) => void;
 }
 
+const CONFETTI_COLORS = ["#0d9488", "#f97362", "#f5b82e", "#7c6cf0"];
+const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
+  left: `${8 + ((i * 37) % 84)}%`,
+  top: `${20 + ((i * 53) % 50)}%`,
+  background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  animationDelay: `${(i % 6) * 40}ms`,
+  transform: `rotate(${(i * 47) % 360}deg)`,
+  borderRadius: i % 3 === 0 ? "999px" : "2px",
+}));
+
 export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false, loop = false, compact = false, onIndexChange }: Props) {
   const [index, setIndex] = useState(Math.min(initialIndex, scenes.length - 1));
   const [playing, setPlaying] = useState(autoplay);
   const [voice, setVoice] = useState(false);
+  const [canSpeak, setCanSpeak] = useState(false);
+  useEffect(() => setCanSpeak(ttsAvailable()), []);
   const scene = scenes[index];
   const indexRef = useRef(index);
   indexRef.current = index;
@@ -55,6 +67,16 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
 
   const { progress, seek } = useScenePlayback(scene?.durationSec ?? 8, playing, onEnd, scene?.id);
 
+  // confetti outlives `playing` so the final scene's burst can finish its animation
+  const [burst, setBurst] = useState(false);
+  const atEnd = progress >= 0.97;
+  useEffect(() => {
+    if (!playing || !atEnd) return;
+    setBurst(true);
+    window.setTimeout(() => setBurst(false), 1400);
+  }, [playing, atEnd]);
+  useEffect(() => setBurst(false), [scene?.id]);
+
   useEffect(() => {
     if (playing && voice && scene) speak(scene.narration);
     if (!playing) stopSpeaking();
@@ -65,9 +87,16 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
   if (!scene) return null;
 
   return (
-    <div className={`card overflow-hidden ${compact ? "" : ""}`}>
+    <div className={compact ? "overflow-hidden rounded-xl border border-ink/10 bg-white" : "card overflow-hidden"}>
       <div className="relative">
         <SceneCanvas scene={scene} progress={progress} className="block h-auto w-full" />
+        {burst && (
+          <div className="confetti pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+            {CONFETTI.map((c, i) => (
+              <span key={i} style={c} />
+            ))}
+          </div>
+        )}
         <div className="pointer-events-none absolute left-4 top-3 flex items-center gap-2 text-xs text-ink/50">
           <span className="rounded-full bg-white/80 px-2 py-0.5 font-medium backdrop-blur">
             Scene {index + 1} / {scenes.length}
@@ -76,11 +105,11 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
         {!playing && (
           <button
             onClick={() => setPlaying(true)}
-            className="group absolute inset-0 flex items-center justify-center bg-white/0 transition hover:bg-white/30"
+            className="group absolute inset-0 flex items-end justify-end p-4 transition hover:bg-white/20"
             aria-label="Play"
           >
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink text-white shadow-lg transition group-hover:scale-105">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink/90 text-white shadow-lg transition group-hover:scale-110">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M8 5v14l11-7z" />
               </svg>
             </span>
@@ -120,7 +149,7 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
             className="h-1 flex-1 accent-accent"
             aria-label="Scene progress"
           />
-          {ttsAvailable() && (
+          {canSpeak && (
             <button
               className={`btn-icon ${voice ? "!text-accent" : ""}`}
               onClick={() => setVoice((v) => !v)}

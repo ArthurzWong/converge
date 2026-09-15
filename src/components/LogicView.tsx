@@ -1,10 +1,10 @@
 import type { Story } from "@/lib/types";
 
 const STAGE_META: Record<string, { label: string; tone: string }> = {
-  problem: { label: "Problem", tone: "text-warn bg-warn/10" },
-  cause: { label: "Cause", tone: "text-ink/70 bg-ink/5" },
+  problem: { label: "Problem", tone: "text-coral bg-coral-soft" },
+  cause: { label: "Cause", tone: "text-[#b7791f] bg-sun-soft" },
   consequence: { label: "Consequence", tone: "text-ink/70 bg-ink/5" },
-  opportunity: { label: "Opportunity", tone: "text-accent bg-accent-soft" },
+  opportunity: { label: "Opportunity", tone: "text-violet bg-violet-soft" },
   solution: { label: "Solution", tone: "text-accent bg-accent-soft" },
   action: { label: "Action", tone: "text-white bg-ink" },
 };
@@ -19,14 +19,14 @@ export default function LogicView({ story }: { story: Story }) {
           const meta = STAGE_META[step.stage] ?? STAGE_META.cause;
           return (
             <li key={`${step.stage}-${i}`} className="relative flex gap-5 pb-8 fade-up" style={{ animationDelay: `${i * 70}ms` }}>
-              <div className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink/15 bg-white font-hand text-lg text-ink/70">
+              <div className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink/10 font-hand text-xl font-bold ${meta.tone}`}>
                 {i + 1}
               </div>
               <div className="card flex-1 p-5">
                 <span className={`inline-block rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${meta.tone}`}>
                   {meta.label}
                 </span>
-                <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
+                <h3 className="font-display mt-2 text-xl font-semibold">{step.title}</h3>
                 <ul className="mt-2 space-y-1.5">
                   {step.points.map((p) => (
                     <li key={p} className="flex gap-2 text-sm text-ink/75">
