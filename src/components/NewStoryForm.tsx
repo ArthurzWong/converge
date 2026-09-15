@@ -60,7 +60,7 @@ export default function NewStoryForm() {
     <div className="fade-up">
       <div className="text-center">
         <span className="eyebrow">Step 1 of 2 · Describe</span>
-        <h1 className="mt-5 text-4xl font-semibold tracking-tight md:text-5xl">What’s on your mind?</h1>
+        <h1 className="font-display mt-5 text-4xl font-semibold md:text-6xl">What’s on your <span className="display-italic scribble text-accent">mind?</span></h1>
         <p className="mx-auto mt-3 max-w-lg text-ink/60">Paste an idea, a problem, meeting notes or a document. Messy is fine.</p>
       </div>
 
@@ -106,7 +106,7 @@ export default function NewStoryForm() {
                 disabled={busy}
                 className={`rounded-xl border p-3.5 text-left transition duration-150 ${
                   active
-                    ? "border-ink bg-ink text-white shadow-md"
+                    ? "border-ink bg-ink text-white shadow-md -rotate-1 scale-[1.02]"
                     : "border-ink/10 bg-white text-ink hover:-translate-y-px hover:border-ink/30 hover:shadow-sm"
                 }`}
               >

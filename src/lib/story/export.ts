@@ -68,7 +68,7 @@ async function inlineFonts(svg: SVGSVGElement): Promise<string> {
   }
   clone.querySelectorAll("text").forEach((t) => {
     t.removeAttribute("class");
-    t.setAttribute("font-family", `'${EXPORT_FAMILY}', Kalam, 'Segoe Print', 'Bradley Hand', cursive`);
+    t.setAttribute("font-family", `'${EXPORT_FAMILY}', Caveat, 'Segoe Print', 'Bradley Hand', cursive`);
   });
   return new XMLSerializer().serializeToString(clone);
 }

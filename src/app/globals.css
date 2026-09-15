@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 :root {
-  --paper: #f7f7f4;
-  --ink: #1d2433;
-  --accent: #0f766e;
+  --paper: #fbf9f4;
+  --ink: #1f2937;
+  --accent: #0d9488;
 }
 
 html {
@@ -20,9 +20,73 @@ body {
 }
 
 .hero-glow {
+  position: relative;
   background:
-    radial-gradient(60% 50% at 50% 0%, rgba(15, 118, 110, 0.12), transparent 70%),
-    radial-gradient(40% 40% at 90% 20%, rgba(29, 36, 51, 0.05), transparent 70%);
+    radial-gradient(55% 45% at 20% 0%, rgba(13, 148, 136, 0.14), transparent 70%),
+    radial-gradient(45% 40% at 85% 10%, rgba(249, 115, 98, 0.14), transparent 70%),
+    radial-gradient(40% 40% at 60% 60%, rgba(245, 184, 46, 0.1), transparent 70%);
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+  font-variation-settings: "opsz" 144, "SOFT" 60;
+  letter-spacing: -0.02em;
+}
+
+.display-italic {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.scribble {
+  position: relative;
+  white-space: nowrap;
+}
+.scribble::after {
+  content: "";
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  bottom: 0.02em;
+  height: 0.28em;
+  z-index: -1;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(245, 184, 46, 0.55), rgba(249, 115, 98, 0.45));
+  transform: rotate(-1.2deg);
+}
+
+.blob {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(40px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.sticker {
+  @apply inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1 font-hand text-lg font-semibold shadow-sm;
+  transform: rotate(-3deg);
+}
+
+.confetti > span {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  animation: confetti-pop 900ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes confetti-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.4) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-70px) scale(1) rotate(240deg);
+  }
 }
 
 .eyebrow {
@@ -40,7 +104,7 @@ body {
 }
 
 .section-title {
-  @apply text-3xl font-semibold tracking-tight md:text-4xl;
+  @apply font-display text-3xl font-semibold md:text-[2.75rem] md:leading-[1.05];
 }
 .section-kicker {
   @apply text-xs font-semibold uppercase tracking-[0.2em] text-accent;
@@ -59,7 +123,8 @@ body {
   @apply rounded-2xl border border-ink/10 bg-white shadow-[0_1px_2px_rgba(29,36,51,0.04),0_8px_24px_-16px_rgba(29,36,51,0.25)];
 }
 .card-hover {
-  @apply transition duration-200 hover:-translate-y-0.5 hover:border-ink/20 hover:shadow-[0_2px_4px_rgba(29,36,51,0.05),0_16px_40px_-20px_rgba(29,36,51,0.35)];
+  @apply transition duration-300 hover:-translate-y-1 hover:border-ink/20 hover:shadow-[0_2px_4px_rgba(29,36,51,0.05),0_24px_48px_-20px_rgba(29,36,51,0.35)];
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .segmented {
@@ -76,13 +141,14 @@ body {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
 }
 .btn-primary {
-  @apply btn bg-ink text-white shadow-[0_1px_2px_rgba(29,36,51,0.2),0_8px_20px_-12px_rgba(29,36,51,0.6)] hover:-translate-y-px hover:bg-ink/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+  @apply btn bg-ink text-white shadow-[0_1px_2px_rgba(29,36,51,0.2),0_10px_24px_-12px_rgba(29,36,51,0.6)] hover:-translate-y-0.5 hover:bg-ink/90 hover:shadow-[0_2px_4px_rgba(29,36,51,0.2),0_16px_32px_-12px_rgba(29,36,51,0.6)] active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0;
 }
 .btn-ghost {
   @apply btn border border-ink/15 bg-white text-ink shadow-sm hover:border-ink/30 hover:bg-paper;
 }
 .btn-accent {
-  @apply btn bg-accent text-white shadow-[0_8px_20px_-12px_rgba(15,118,110,0.8)] hover:-translate-y-px hover:bg-accent/90;
+  @apply btn text-white shadow-[0_10px_24px_-12px_rgba(13,148,136,0.9)] hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-12px_rgba(13,148,136,0.9)] active:translate-y-0;
+  background: linear-gradient(135deg, #0d9488, #14b8a6);
 }
 .btn-icon {
   @apply inline-flex h-8 w-8 items-center justify-center rounded-full text-ink/60 transition hover:bg-ink/5 hover:text-ink disabled:opacity-30;

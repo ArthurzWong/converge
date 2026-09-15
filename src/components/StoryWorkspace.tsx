@@ -76,7 +76,7 @@ export default function StoryWorkspace({ story, onChange, readOnly = false, onDu
               </span>
               {readOnly && <span className="rounded-full bg-ink/5 px-2.5 py-0.5">Shared · read only</span>}
             </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">{story.analysis.title}</h1>
+            <h1 className="font-display mt-3 text-3xl font-semibold md:text-[2.6rem] md:leading-[1.1]">{story.analysis.title}</h1>
             <p className="mt-2 max-w-2xl text-ink/65">{story.analysis.problem}</p>
           </div>
 

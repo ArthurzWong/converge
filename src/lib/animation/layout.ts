@@ -21,7 +21,7 @@ function wobble(points: Point[], amount: number, r: () => number): Point[] {
 }
 
 /** Sample a straight segment into wobbly points so it looks hand-drawn. */
-function segment(a: Point, b: Point, r: () => number, amount = 2.2): Point[] {
+function segment(a: Point, b: Point, r: () => number, amount = 1.8): Point[] {
   const len = Math.hypot(b.x - a.x, b.y - a.y);
   const n = Math.max(2, Math.round(len / 28));
   const pts: Point[] = [];
@@ -52,7 +52,7 @@ function ellipse(cx: number, cy: number, rx: number, ry: number, r: () => number
     const t = (i / n) * Math.PI * 2 - Math.PI / 2;
     pts.push({ x: cx + Math.cos(t) * rx, y: cy + Math.sin(t) * ry });
   }
-  return wobble(pts, 2, r);
+  return wobble(pts, Math.min(0.9, Math.min(rx, ry) * 0.1), r);
 }
 
 interface Placed {
@@ -63,10 +63,28 @@ interface Placed {
   h: number;
 }
 
-const INK = "#1d2433";
-const ACCENT = "#0f766e";
-const WARN = "#c2410c";
-const SOFT = "#64748b";
+const INK = "#1f2937";
+const ACCENT = "#0d9488";
+const WARN = "#ea580c";
+const SOFT = "#6b7280";
+
+/** Marker-highlighter tints laid behind each shape once its outline is inked. */
+const TINT: Record<NodeStyle, string | null> = {
+  box: "#fff4c7",
+  pill: "#e9e4ff",
+  cloud: "#e3f2ff",
+  cylinder: "#dcfce7",
+  person: null,
+  warning: "#ffe4d1",
+  spark: "#ccfbf1",
+};
+
+/** Slightly shrunken, offset copy of an outline so the tint looks like a marker pass. */
+function tintPoints(points: Point[], cx: number, cy: number, r: () => number): Point[] {
+  const ox = (r() - 0.5) * 6;
+  const oy = (r() - 0.5) * 6 + 2;
+  return points.map((p) => ({ x: cx + (p.x - cx) * 0.94 + ox, y: cy + (p.y - cy) * 0.9 + oy }));
+}
 
 function wrap(text: string, maxChars: number): string[] {
   const words = text.split(/\s+/);
@@ -87,6 +105,7 @@ function drawNode(p: Placed, r: () => number, out: VisualElement[]) {
   const style: NodeStyle = node.style ?? "box";
   const shapeId = `n-${node.id}`;
   const color = style === "warning" ? WARN : style === "spark" ? ACCENT : INK;
+  const before = out.length;
 
   if (style === "person") {
     const headR = Math.min(w, h) * 0.18;
@@ -106,7 +125,7 @@ function drawNode(p: Placed, r: () => number, out: VisualElement[]) {
       const rad = 1 + 0.12 * Math.sin(t * bumps);
       pts.push({ x: cx + Math.cos(t) * (w / 2) * rad, y: cy + Math.sin(t) * (h / 2) * rad });
     }
-    out.push({ id: shapeId, type: "stroke", points: wobble(pts, 1.5, r), closed: true, color });
+    out.push({ id: shapeId, type: "stroke", points: wobble(pts, 0.8, r), closed: true, color });
   } else if (style === "cylinder") {
     const ry = h * 0.14;
     out.push({ id: shapeId, type: "stroke", points: ellipse(cx, cy - h / 2 + ry, w / 2, ry, r), closed: true, color });
@@ -115,7 +134,7 @@ function drawNode(p: Placed, r: () => number, out: VisualElement[]) {
       type: "stroke",
       points: [
         ...segment({ x: cx - w / 2, y: cy - h / 2 + ry }, { x: cx - w / 2, y: cy + h / 2 - ry }, r),
-        ...ellipse(cx, cy + h / 2 - ry, w / 2, ry, r).slice(18, 37),
+        ...ellipse(cx, cy + h / 2 - ry, w / 2, ry, r).slice(9, 28).reverse(),
         ...segment({ x: cx + w / 2, y: cy + h / 2 - ry }, { x: cx + w / 2, y: cy - h / 2 + ry }, r),
       ],
       after: [shapeId],
@@ -158,6 +177,40 @@ function drawNode(p: Placed, r: () => number, out: VisualElement[]) {
       { x: cx - w / 2, y: cy + h / 2 },
     ];
     out.push({ id: shapeId, type: "stroke", points: polyline(corners, r), closed: true, color });
+  }
+
+  const tint = TINT[style];
+  const outline = style === "cylinder" ? out[before + 1] : out[before];
+  if (tint && outline && outline.type === "stroke") {
+    out.push({ id: `${shapeId}-tint`, type: "fill", points: tintPoints(outline.points, cx, cy, r), fill: tint, group: shapeId, after: [outline.id] });
+  }
+  if (style === "spark") {
+    for (let i = 0; i < 3; i++) {
+      const a = (i / 3) * Math.PI * 2 + r() * 0.8;
+      const d = Math.max(w, h) * 0.62 + r() * 10;
+      const sx = cx + Math.cos(a) * d;
+      const sy = cy + Math.sin(a) * d * 0.8;
+      const s = 5 + r() * 4;
+      out.push({
+        id: `${shapeId}-sparkle-${i}`,
+        type: "stroke",
+        points: [
+          { x: sx, y: sy - s },
+          { x: sx + s * 0.3, y: sy - s * 0.3 },
+          { x: sx + s, y: sy },
+          { x: sx + s * 0.3, y: sy + s * 0.3 },
+          { x: sx, y: sy + s },
+          { x: sx - s * 0.3, y: sy + s * 0.3 },
+          { x: sx - s, y: sy },
+          { x: sx - s * 0.3, y: sy - s * 0.3 },
+        ],
+        closed: true,
+        width: 1.8,
+        color: "#f59e0b",
+        group: shapeId,
+        after: [shapeId],
+      });
+    }
   }
 
   const labelBelow = style === "person" || style === "warning" || style === "spark";

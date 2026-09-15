@@ -16,6 +16,7 @@ const STEPS = [
 const OUTPUTS = [
   {
     title: "Story",
+    tone: "bg-sun-soft text-[#b7791f]",
     body: "A hand-drawn storyboard you can play, edit, reorder and regenerate scene by scene.",
     icon: (
       <path d="M4 6h16M4 12h10M4 18h7" strokeLinecap="round" />
@@ -23,6 +24,7 @@ const OUTPUTS = [
   },
   {
     title: "Logic",
+    tone: "bg-violet-soft text-violet",
     body: "The reasoning laid bare — entities, relationships and the chain from problem to action.",
     icon: (
       <>
@@ -35,6 +37,7 @@ const OUTPUTS = [
   },
   {
     title: "Action",
+    tone: "bg-accent-soft text-accent",
     body: "A prioritised plan: what to do, why, and the outcome to expect.",
     icon: (
       <>
@@ -53,20 +56,20 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-5 pb-16 pt-16 md:pt-24">
             <div className="mx-auto max-w-3xl text-center fade-up">
               <span className="eyebrow">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                <span className="h-1.5 w-1.5 rounded-full bg-coral" />
                 AI reasoning · Visual storytelling · Action
               </span>
-              <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-tight md:text-7xl">
+              <h1 className="font-display mt-6 text-5xl font-semibold leading-[1.02] md:text-[5.5rem]">
                 Turn complexity
                 <br />
-                into <span className="text-accent">clarity.</span>
+                into <span className="display-italic scribble text-accent">clarity.</span>
               </h1>
               <p className="mx-auto mt-6 max-w-xl text-lg text-ink/65 md:text-xl">
                 Give CONVERGE a messy idea, problem or document. It thinks it through, draws it as a short visual story, and hands
                 you an action plan.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Link href="/new" className="btn-primary !px-6 !py-3 !text-base">
+                <Link href="/new" className="btn-primary !px-7 !py-3.5 !text-base">
                   Create your first visual story
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                     <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
@@ -79,8 +82,17 @@ export default function LandingPage() {
               <p className="mt-4 text-sm text-ink/50">No sign-up · Runs in your browser · Works without an API key</p>
             </div>
 
-            <div className="mx-auto mt-14 max-w-4xl fade-up" style={{ animationDelay: "120ms" }}>
-              <div className="window">
+            <div className="relative mx-auto mt-14 max-w-4xl fade-up" style={{ animationDelay: "120ms" }}>
+              <span className="blob -left-16 top-10 h-48 w-48 bg-sun" />
+              <span className="blob -right-16 bottom-10 h-56 w-56 bg-coral" />
+              <span className="blob left-1/3 -top-10 h-40 w-40 bg-violet" />
+              <span className="sticker absolute -left-3 -top-4 z-10 hidden bg-sun-soft text-ink md:inline-flex" style={{ transform: "rotate(-6deg)" }}>
+                ✦ drawn live
+              </span>
+              <span className="sticker absolute -right-4 -bottom-4 z-10 hidden bg-coral-soft text-coral md:inline-flex animate-wiggle" style={{ transform: "rotate(4deg)" }}>
+                5 scenes → 1 plan
+              </span>
+              <div className="window relative">
                 <div className="window-bar">
                   <i />
                   <i />
@@ -103,13 +115,13 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {OUTPUTS.map((o) => (
-              <div key={o.title} className="card card-hover p-6">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-accent">
+              <div key={o.title} className="card card-hover group p-6">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${o.tone} transition group-hover:-rotate-6 group-hover:scale-110`}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                     {o.icon}
                   </svg>
                 </div>
-                <h3 className="mt-5 text-lg font-semibold">{o.title}</h3>
+                <h3 className="font-display mt-5 text-2xl font-semibold">{o.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink/65">{o.body}</p>
               </div>
             ))}
@@ -132,7 +144,7 @@ export default function LandingPage() {
               <ol className="grid gap-3 sm:grid-cols-2">
                 {STEPS.map(([title, body], i) => (
                   <li key={title} className="card card-hover flex gap-4 p-5">
-                    <span className="font-hand text-2xl leading-none text-accent">{String(i + 1).padStart(2, "0")}</span>
+                    <span className={`font-hand text-3xl leading-none ${["text-accent","text-coral","text-violet","text-[#b7791f]","text-accent","text-coral"][i]}`}>{String(i + 1).padStart(2, "0")}</span>
                     <div>
                       <h3 className="font-semibold">{title}</h3>
                       <p className="mt-1 text-sm leading-relaxed text-ink/65">{body}</p>
@@ -164,10 +176,12 @@ export default function LandingPage() {
         </section>
 
         <section className="mx-auto max-w-6xl px-5 pb-24">
-          <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-16 text-center text-white md:px-16">
+          <div className="relative overflow-hidden rounded-[2rem] bg-ink px-6 py-20 text-center text-white md:px-16">
             <div className="paper-grid absolute inset-0 opacity-[0.12]" />
+            <span className="blob -left-10 -top-10 h-64 w-64 bg-accent opacity-40" />
+            <span className="blob -bottom-16 -right-10 h-64 w-64 bg-coral opacity-40" />
             <div className="relative">
-              <blockquote className="mx-auto max-w-2xl font-hand text-3xl leading-snug text-white/90 md:text-4xl">
+              <blockquote className="mx-auto max-w-2xl font-hand text-4xl leading-snug text-white/95 md:text-5xl">
                 “Don’t just answer the question. Help people see the problem.”
               </blockquote>
               <div className="mt-8">

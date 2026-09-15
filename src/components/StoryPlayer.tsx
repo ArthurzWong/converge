@@ -14,6 +14,16 @@ interface Props {
   onIndexChange?: (i: number) => void;
 }
 
+const CONFETTI_COLORS = ["#0d9488", "#f97362", "#f5b82e", "#7c6cf0"];
+const CONFETTI = Array.from({ length: 18 }, (_, i) => ({
+  left: `${8 + ((i * 37) % 84)}%`,
+  top: `${20 + ((i * 53) % 50)}%`,
+  background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  animationDelay: `${(i % 6) * 40}ms`,
+  transform: `rotate(${(i * 47) % 360}deg)`,
+  borderRadius: i % 3 === 0 ? "999px" : "2px",
+}));
+
 export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false, loop = false, compact = false, onIndexChange }: Props) {
   const [index, setIndex] = useState(Math.min(initialIndex, scenes.length - 1));
   const [playing, setPlaying] = useState(autoplay);
@@ -70,6 +80,13 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
     <div className={compact ? "overflow-hidden rounded-xl border border-ink/10 bg-white" : "card overflow-hidden"}>
       <div className="relative">
         <SceneCanvas scene={scene} progress={progress} className="block h-auto w-full" />
+        {playing && progress >= 0.97 && (
+          <div className="confetti pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+            {CONFETTI.map((c, i) => (
+              <span key={i} style={c} />
+            ))}
+          </div>
+        )}
         <div className="pointer-events-none absolute left-4 top-3 flex items-center gap-2 text-xs text-ink/50">
           <span className="rounded-full bg-white/80 px-2 py-0.5 font-medium backdrop-blur">
             Scene {index + 1} / {scenes.length}
