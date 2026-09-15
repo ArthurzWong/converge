@@ -20,7 +20,13 @@ async function toDataUrl(url: string): Promise<string> {
 function handFontCss(): Promise<string> {
   if (fontCssPromise) return fontCssPromise;
   fontCssPromise = (async () => {
-    const family = getComputedStyle(document.documentElement).getPropertyValue("--font-hand").trim().replace(/^['"]|['"]$/g, "");
+    const families = new Set(
+      getComputedStyle(document.documentElement)
+        .getPropertyValue("--font-hand")
+        .split(",")
+        .map((f) => f.trim().replace(/^['"]|['"]$/g, ""))
+        .filter((f) => f && !/fallback/i.test(f)),
+    );
     const rules: CSSFontFaceRule[] = [];
     for (const sheet of Array.from(document.styleSheets)) {
       let list: CSSRuleList;
@@ -30,7 +36,7 @@ function handFontCss(): Promise<string> {
         continue;
       }
       for (const rule of Array.from(list)) {
-        if (rule instanceof CSSFontFaceRule && family && rule.style.getPropertyValue("font-family").replace(/['"]/g, "") === family) {
+        if (rule instanceof CSSFontFaceRule && families.has(rule.style.getPropertyValue("font-family").trim().replace(/['"]/g, ""))) {
           rules.push(rule);
         }
       }
