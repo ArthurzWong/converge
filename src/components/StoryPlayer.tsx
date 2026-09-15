@@ -18,6 +18,8 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
   const [index, setIndex] = useState(Math.min(initialIndex, scenes.length - 1));
   const [playing, setPlaying] = useState(autoplay);
   const [voice, setVoice] = useState(false);
+  const [canSpeak, setCanSpeak] = useState(false);
+  useEffect(() => setCanSpeak(ttsAvailable()), []);
   const scene = scenes[index];
   const indexRef = useRef(index);
   indexRef.current = index;
@@ -65,7 +67,7 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
   if (!scene) return null;
 
   return (
-    <div className={`card overflow-hidden ${compact ? "" : ""}`}>
+    <div className={compact ? "overflow-hidden rounded-xl border border-ink/10 bg-white" : "card overflow-hidden"}>
       <div className="relative">
         <SceneCanvas scene={scene} progress={progress} className="block h-auto w-full" />
         <div className="pointer-events-none absolute left-4 top-3 flex items-center gap-2 text-xs text-ink/50">
@@ -120,7 +122,7 @@ export default function StoryPlayer({ scenes, initialIndex = 0, autoplay = false
             className="h-1 flex-1 accent-accent"
             aria-label="Scene progress"
           />
-          {ttsAvailable() && (
+          {canSpeak && (
             <button
               className={`btn-icon ${voice ? "!text-accent" : ""}`}
               onClick={() => setVoice((v) => !v)}
